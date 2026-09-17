@@ -1,0 +1,70 @@
+= Containerfile (Dockerfile)
+
+:project-name: tutorial-app
+
+Containerfile (또는 Dockerfile)은 컨테이너 이미지를 빌드하는 데 사용되는 정의를 명시하는 파일입니다. 세 가지 주요 키워드/명령을 사용합니다.
+
+* FROM: 현재의 이미지를 빌드하는 데 사용되는 기본 이미지를 명시
+* COPY: 이미지에 넣을 파일을 명시
+* CMD: 애플리케이션을 시작하는 방법을 명시
+
+[TIP]
+====
+때때로 사람들은 언제 ADD를 사용하고 언제 COPY를 사용해야 하는지 묻습니다. 둘 다 소스에서 대상으로 파일을 복사하는 데 사용할 수 있지만:
+
+* COPY: 로컬 파일을 컨테이너로 간단히 복사합니다.
+* ADD: 로컬 tar 파일도 추출하고 원격 URL도 지원합니다. 덜 명확하므로 이러한 기능이 특별히 필요하지 않은 한 COPY를 사용하는 것이 좋습니다.
+====
+
+== 컨테이너화할 애플리케이션 생성
+
+먼저 컨테이너화할 수 있는 간단한 Java 애플리케이션을 만들어 보겠습니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+mvn "io.quarkus.platform:quarkus-maven-plugin:create" -DprojectGroupId="com.redhat.developers" -DprojectArtifactId="{project-name}" -DprojectVersion="1.0-SNAPSHOT" -Dextensions=rest
+cd {project-name}
+----
+
+IMPORTANT:  튜토리얼의 나머지 모든 부분은 방금 만든 프로젝트 `{project-name}` 폴더 내부에서 작업합니다.
+
+이 애플리케이션을 배포할 준비를 하려면 다음과 같이 패키징해 보겠습니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+mvn package
+----
+
+
+== Building a Containerfile
+
+VIM 편집기로 Containerfile 라는 이름의 파일을 만들어 보겠습니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+vim Containerfile
+----
+
+아래의 내용으로 Containerfile 파일을 만듭니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:1.18-4
+
+ENV LANGUAGE='en_US:en'
+
+COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 target/quarkus-app/*.jar /deployments/
+COPY --chown=185 target/quarkus-app/app/ /deployments/app/
+COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
+
+EXPOSE 8080
+USER 185
+ENV JAVA_OPTS="-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
+----
+

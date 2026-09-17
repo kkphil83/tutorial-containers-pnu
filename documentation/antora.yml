@@ -1,0 +1,6 @@
+name: container-tutorial
+title: Module 1 - Container
+version: main
+nav:
+  - modules/ROOT/nav.adoc
+start_page: ROOT:index.adoc

@@ -1,0 +1,148 @@
+= 이미지 관리
+
+이미지는 컨테이너를 만들고 실행하는 데 사용할 수 있습니다. 컨테이너를 빌드하는 방법에 대한 지침이 포함된 템플릿과 같습니다. 이미지는 컨테이너 관련 활동의 시작점이며 가상 머신(VM) 환경의 스냅샷으로 생각할 수 있습니다.
+
+== Containerfile (또는 Dockerfile) 기반 이미지 빌드
+
+이전 단계에서 만든 Containerfile을 사용하여 컨테이너 이미지를 빌드해 보겠습니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman build -t my-image .
+----
+
+다음과 같은 출력이 표시됩니다.
+
+[.console-output]
+[source,text]
+----
+STEP 1/11: FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:1.18-4
+STEP 2/11: ENV LANGUAGE='en_US:en'
+--> Using cache 7819ee5ffcddd7271987e306c787854c874bc81798370435d6efa7a89cc4990e
+--> 7819ee5ffcdd
+STEP 3/11: COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
+--> 9b51381ccca6
+STEP 4/11: COPY --chown=185 target/quarkus-app/*.jar /deployments/
+--> 4d299e6fd3b4
+STEP 5/11: COPY --chown=185 target/quarkus-app/app/ /deployments/app/
+--> 6fce0c1e1dbc
+STEP 6/11: COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
+--> 7177bec47b2f
+STEP 7/11: EXPOSE 8080
+--> 9bd1b9ec7771
+STEP 8/11: USER 185
+--> 61bc6e589684
+STEP 9/11: ENV JAVA_OPTS="-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+--> 08f8fe193e07
+STEP 10/11: ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
+--> 2f8f931e08b1
+STEP 11/11: CMD ["java", "-jar", "/deployments/app.jar"]
+COMMIT my-image
+--> a8172ead99ee
+Successfully tagged localhost/my-image:latest
+a8172ead99eece385fa756e85948656896645f7f1848c68dfe498da9d93be073
+----
+
+== 사용 가능한 이미지 리스트
+
+방금 만든 이미지를 보려면 다음을 실행하세요.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman images
+----
+
+최소한 다음 두 가지 출력이 표시됩니다.
+
+[.console-output]
+[source,text]
+----
+REPOSITORY                                   TAG                 IMAGE ID            CREATED             SIZE
+my-image                                     latest              87776d35fc85        4 minutes ago       392MB
+registry.access.redhat.com/ubi9/openjdk-21-runtime 1.18-4        80786be7434f        3 weeks ago         375 MB
+----
+
+귀하의 이미지는 `my-image` 이며, `registry.access.redhat.com/ubi9/openjdk-21` 는 귀하의 이미지를 빌드하는 데 사용된 이미지입니다.
+
+== 데스크톱 인터페이스 탐색
+
+데스크톱 인터페이스에서 이미지 관리를 살펴보겠습니다.
+
+
+Podman Desktop::
+VNC 웹 브라우저를 통해 RHEL 9 GUI 환경에서 Activities를 선택하고, 하단의 주사위 모양의 아이콘을 누르면, 현재 OS에 설치되어 있는 프로그램이 보입니다. 이 중에서 Podman Desktop 프로그램을 선택하여 실행합니다.
+
+image::pd-0-4.png[alt="Podman Desktop", align="center"]
+
+*Podman Desktop* 을 사용하면 *Images* 탭에서 새로 만든 이미지를 볼 수 있습니다. 이미지 ID, 태그, 생성 날짜, 이미지 크기를 포함하여 새로 만든 이미지에 대한 정보를 찾을 수 있습니다. 이미지 이름을 선택하여 이미지에 대한 자세한 정보를 확인해 보겠습니다.
+
+image::pd-0-3.png[alt="Podman Desktop Images Views", align="center"]
+
+이미지의 상세 정보를 보기 위해 오른쪽 점 세개 부분을 선택하고, Show History 버튼을 선택합니다.
+
+image::pd-0-1.png[alt="Podman Desktop Images tab", align="center"]
+
+우리는 JSON 형식의 이미지 레이어에 대한 정보와 이미지에 대한 low-level 정보를 볼 수 있습니다.
+
+image::pd-0-2.png[alt="Podman Desktop Image Info tab", align="center"]
+
+
+지금은 터미널을 사용하고 *podman* CLI에 조금 더 익숙해지도록 하겠습니다.
+
+== 이미지 관리
+
+Podman 또는 Docker CLI는 컨테이너 이미지를 관리하는 여러 가지 방법을 제공합니다. 다음 help 명령을 실행하여 자세한 내용을 확인할 수 있습니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman image -h
+----
+
+[.console-output]
+[source,text]
+----
+Manage images
+
+Description:
+  Manage images
+
+Usage:
+  podman image [command]
+
+Available Commands:
+  build       Build an image using instructions from Containerfiles
+  diff        Inspect changes to the image's file systems
+  exists      Check if an image exists in local storage
+  history     Show history of a specified image
+  import      Import a tarball to create a filesystem image
+  inspect     Display the configuration of an image
+  list        List images in local storage
+  load        Load image(s) from a tar archive
+  mount       Mount an image's root filesystem
+  prune       Remove unused images
+  pull        Pull an image from a registry
+  push        Push an image to a specified destination
+  rm          Remove one or more images from local storage
+  save        Save image(s) to an archive
+  scp         Securely copy images
+  search      Search registry for image
+  sign        Sign an image
+  tag         Add an additional name to a local image
+  tree        Print layer hierarchy of an image in a tree format
+  trust       Manage container image trust policy
+  unmount     Unmount an image's root filesystem
+  untag       Remove a name from a local image
+----
+
+방금 만든 이미지를 제거해 보겠습니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman image rm my-image
+----
+
+좋아요! 컨테이너 이미지 전문가가 되는 길로 잘 가고 있습니다 :)

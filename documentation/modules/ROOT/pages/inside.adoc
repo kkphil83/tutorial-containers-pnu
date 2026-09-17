@@ -1,0 +1,61 @@
+= 컨테이너 내부
+
+다른 호스트에서와 마찬가지로, 실행 중인 컨테이너 내에서 명령을 쉽게 실행할 수 있습니다.
+
+== 컨테이너 내부에서 명령 실행
+
+실행 중인 컨테이너에서 이를 실행하려면 다음을 실행하세요.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman exec -it my-container /bin/bash
+----
+
+이제 터미널 프롬프트는 다음과 같아야 합니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+[default@3cef96df8faa ~]$
+----
+
+`curl` 과 같이 컨테이너 내부에 명령어가 설치되어 있으면, 컨테이너 내부에서 실행이 가능합니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+curl localhost:8080/hello
+----
+
+애플리케이션의 .jar 파일을 살펴보겠습니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+ls /deployments/
+----
+
+이 컨테이너의 VM 설정을 인쇄할 수도 있습니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+java -XshowSettings:vm -version
+----
+
+OS 버전 세부 정보도 확인하세요.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+cat /etc/os-release
+----
+
+이전 터미널로 돌아가려면 다음을 실행하세요.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+exit
+----

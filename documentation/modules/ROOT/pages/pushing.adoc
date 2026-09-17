@@ -1,0 +1,103 @@
+= 공개 레지스트리에 이미지 푸시하기
+
+지금까지 로컬에서 컨테이너 이미지를 작업했습니다. 이제 원격 레지스트리로 가져가 봅시다.
+
+== 이미지 태그 지정
+
+IMPORTANT: 이미지를 공개 저장소에 푸시하려면 레지스트리 계정을 가지고 있어야 합니다. https://quay.io[Quay.io] 또는 https://hub.docker.com/[Docker Hub] 에서 무료로 가입할 수 있습니다. 계정이 없으시면, 푸시 과정은 건너뛰어도 좋습니다.
+
+먼저 레지스트리와 저장소에 지정한 이름에 맞게 이미지에 태그를 지정해야 합니다. 예를 들어 `myrepository` 저장소를 만든다고 가정해 보겠습니다.
+
+Docker Hub 계정이 있는 경우:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman tag my-image docker.io/myrepository/my-image
+----
+
+Quay.io를 사용하는 경우:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman tag my-image quay.io/myrepository/my-image
+----
+
+IMPORTANT: `myrepository` 를 자신의 저장소 이름으로 바꿔야 합니다.
+
+[TIP]
+====
+아래처럼 이미지를 빌드할 때에 동시에 태크를 만들었다면, 위 단계를 별도로 수행할 필요가 없습니다.
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman build -t quay.io/myrepository/my-image .
+----
+
+====
+
+`podman images` 를 실행하면 다음과 같은 화면이 표시됩니다.
+
+[.console-output]
+[source,text]
+----
+REPOSITORY                                   TAG                 IMAGE ID            CREATED             SIZE
+my-image                                     latest              a63dec174904        55 minutes ago      516MB
+quay.io/myrepository/my-image                latest              a63dec174904        55 minutes ago      516MB
+----
+
+== 이미지 푸시하기 (옵션)
+
+이제 푸시할 준비가 되었습니다. 푸시하기 전에 터미널에서 선택한 레지스트리에 로그인해야 합니다.
+
+IMPORTANT: 이 단계는 Quay.io 나 Docker Hub에 계정이 있으신 분만 진행하시고, 계정이 없으신 분께서는 내용만 확인해 주세요.
+
+[tabs]
+====
+Quay.io::
++
+--
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman login quay.io
+----
+--
+Docker Hub::
++
+--
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+podman login
+----
+--
+====
+
+마지막으로 다음과 같이 푸시할 수 있습니다.
+
+[.console-input]  
+[source,bash,subs="+macros,+attributes"]
+----
+podman push quay.io/myrepository/my-image
+----
+
+다음과 같은 출력이 나와야 합니다.
+
+
+
+[.console-output]
+[source,text]
+----
+The push refers to repository [quay.io/myrepository/my-image]
+abea900bc08c: Pushed
+99d5cac89a03: Pushed
+7b08010864ba: Pushed
+90c2e42f948b: Pushed
+f9ddbcc4e795: Pushed
+latest: digest: sha256:de852b7869b9eff45994b676f0dd98cbfb2b8a76a8b11ca6d06e8f93c344e8c9 size: 1371
+----
+
+이제 https://quay.io[Quay.io] 또는 https://hub.docker.com[Docker Hub] 계정 으로 이동하면 바로 이미지를 볼 수 있습니다.

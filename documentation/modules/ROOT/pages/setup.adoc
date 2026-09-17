@@ -1,0 +1,12 @@
+[[requirements]]
+= 환경 설정
+include::_attributes.adoc[]
+
+= 실습 환경 확인
+== RHEL 10
+이 환경에는 실습에 필요한 Apache Maven, OpenJDK, Podman, Skopeo, Buildah 가 사전 구성되어 있습니다.
+
+
+
+
+
