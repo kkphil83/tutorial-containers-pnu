@@ -170,7 +170,7 @@ drwxr-xr-x  25 asotobu  staff   800B Apr 11 16:36 ..
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-skopeo copy docker://quay.io/rhdevelopers/quarkus-demo:v1 docker-daemon:docker.io/rhdevelopers/quarkus-demo:skopeo
+skopeo copy docker://quay.io/rhdevelopers/quarkus-demo:v1 containers-storage:docker.io/rhdevelopers/quarkus-demo:skopeo
 ----
 
 [.console-output]
